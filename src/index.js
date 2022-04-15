@@ -75,42 +75,32 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { title, deadline } = request.body;
   const { id } = request.params;
 
-  const todoIndex = user.todos.findIndex((todo) => todo.id === id)
-
-  if (todoIndex === -1) {
+  const todo = user.todos.find((todo) => todo.id === id);
+  if (!todo) {
     return response.status(404).json({
       error: `No TODO was found with the id "${id}"`
     })
   }
 
-  user.todos[todoIndex] = {
-    ...user.todos[todoIndex],
-    title: title || todo.title,
-    deadline: deadline || todo.deadline
-  }
+  todo.title = title || todo.title,
+  todo.deadline = deadline || todo.deadline
 
-  response.status(200).json({
-    title: user.todos[todoIndex].title,
-    deadline: user.todos[todoIndex].deadline,
-    done: user.todos[todoIndex].done,
-  })
+  response.status(200).json(todo)
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const { id } = request.params;
   const { user } = request;
 
-  const todoIndex = user.todos.findIndex((todo) => todo.id === id);
-
-  if (todoIndex === -1) {
+  const todo = user.todos.find((todo) => todo.id === id);
+  if (!todo) {
     return response.status(404).json({
       error: `No TODO was found with the id "${id}"`
     })
   }
 
-  user.todos[todoIndex].done = true;
-
-  return response.status(200).json(user.todos[todoIndex]);  
+  todo.done = true;
+  return response.status(200).json(todo);  
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
